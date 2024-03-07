@@ -1,9 +1,8 @@
-﻿<Window x:Class="TechnikaCyfrowa.MainWindow"
+﻿<Window x:Class="PrzetwrzanieObrazow.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:TechnikaCyfrowa"
         mc:Ignorable="d"
         Title="MainWindow" Height="600" Width="1200">
     <Grid>
@@ -15,29 +14,29 @@
             <RowDefinition />
         </Grid.RowDefinitions>
         <Grid Grid.Column="0" Grid.Row="0">
-            <Menu MaxHeight="25" VerticalAlignment="Top">
-                <MenuItem Header="Lab1" MinHeight="25">
-                    <MenuItem Header="Wczytaj Szarowcieniowe" />
-                    <MenuItem Header="Wczytaj kolorowe" />
-                    <MenuItem Header="Histogram graficzny" />
-                    <MenuItem Header="Histogram tablica" />
-                    <MenuItem Header="RGBtoGrey" />
-                    <MenuItem Header="3xGrey" />
-                    <MenuItem Header="RGBtoHSV" />
-                    <MenuItem Header="Rozciąganie histogramu" />
-                    <MenuItem Header="Equalizacja"/>
+            <Menu MaxHeight="25" VerticalAlignment="Top" Background="#1f1c1c" Foreground="White">
+                <MenuItem Header="Lab1" MinHeight="25" Background="#1f1c1c">
+                    <MenuItem x:Name="GrayScaleLoadButton" Header="Wczytaj Szarowcieniowe" Background="#1f1c1c"  Click="GrayScaleLoadButton_Click"/>
+                    <MenuItem x:Name="ColorScaleLoadButton" Header="Wczytaj kolorowe" Background="#1f1c1c" Click="ColorScaleLoadButton_Click" />
+                    <MenuItem x:Name="HistogramGraphicButton" Header="Histogram graficzny"  Background="#1f1c1c" Click="HistogramGraphicButton_Click"/>
+                    <MenuItem x:Name="HistogramTableButton" Header="Histogram tablica" Background="#1f1c1c" Click="HistogramTableButton_Click"/>
+                    <MenuItem Header="RGBtoGrey" Background="#1f1c1c"/>
+                    <MenuItem Header="3xGrey" Background="#1f1c1c"/>
+                    <MenuItem Header="RGBtoHSV" Background="#1f1c1c"/>
+                    <MenuItem Header="Rozciąganie histogramu" Background="#1f1c1c"/>
+                    <MenuItem Header="Equalizacja" Background="#1f1c1c" />
                 </MenuItem>
-                <MenuItem Header="Lab2">
+                <MenuItem Header="Lab2" Background="#1f1c1c">
                     <MenuItem Header="">
-
+ 
                     </MenuItem>
                 </MenuItem>
             </Menu>
         </Grid>
-        <ScrollViewer HorizontalScrollBarVisibility="Auto" Grid.Row="1" Grid.Column="0">
-            <WrapPanel  VerticalAlignment="Top" Height="100" Background="Red" Margin="0,0,0,0">
-                <Image Width="75" Height="75" VerticalAlignment="Center" Margin="5,5,5,0" Source="/1578997398.jpg" HorizontalAlignment="Center" />
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Grid.Row="1" Grid.Column="0">
+            <WrapPanel x:Name="ImageWrapPanel"  VerticalAlignment="Top" Height="100" Background="Black" Margin="0,0,0,0">
             </WrapPanel>
         </ScrollViewer>
+        <Image x:Name="Image" Grid.Row="2"/>
     </Grid>
 </Window>
