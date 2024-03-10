@@ -23,6 +23,12 @@ namespace PrzetwrzanieObrazow.FunctionWindows
     /// </summary>
     public partial class HistogramTable : Window
     {
+        public class DataItem
+        {
+            public string Column1 { get; set; }
+            public string Column2 { get; set; }
+        }
+
         Bitmap Bitmap { get; set; }
 
         public HistogramTable(Bitmap bitmap)
@@ -49,12 +55,8 @@ namespace PrzetwrzanieObrazow.FunctionWindows
                 }
             }
 
-            
-            var date = histo.Select(x => new { Value = x.Key.R ,Count = x.Value }).ToList();
 
-            this.DataGrid.Items.Add("test");
-
-            this.DataGrid.ItemsSource = date;
+            this.DataGrid.Items.Add(new DataItem() { Column1 = "trwes", Column2 = "teststs" });
         }
     }
 }

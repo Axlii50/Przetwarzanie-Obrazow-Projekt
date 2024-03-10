@@ -24,7 +24,7 @@
                     <MenuItem Header="3xGrey" Background="#1f1c1c"/>
                     <MenuItem Header="RGBtoHSV" Background="#1f1c1c"/>
                     <MenuItem Header="Rozciąganie histogramu" Background="#1f1c1c"/>
-                    <MenuItem Header="Equalizacja" Background="#1f1c1c" />
+                    <MenuItem x:Name="EqualizeTableButton" Header="Equalizacja" Background="#1f1c1c"/>
                 </MenuItem>
                 <MenuItem Header="Lab2" Background="#1f1c1c">
                     <MenuItem Header="">
@@ -33,10 +33,10 @@
                 </MenuItem>
             </Menu>
         </Grid>
-        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Grid.Row="1" Grid.Column="0">
+        <!--<ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Grid.Row="1" Grid.Column="0">
             <WrapPanel x:Name="ImageWrapPanel"  VerticalAlignment="Top" Height="100" Background="Black" Margin="0,0,0,0">
             </WrapPanel>
         </ScrollViewer>
-        <Image x:Name="Image" Grid.Row="2"/>
+        <Image x:Name="Image" Grid.Row="2"/>-->
     </Grid>
 </Window>

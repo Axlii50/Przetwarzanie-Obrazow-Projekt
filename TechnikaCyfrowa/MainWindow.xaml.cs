@@ -30,18 +30,6 @@ namespace PrzetwrzanieObrazow
         public MainWindow()
         {
             InitializeComponent();
-            App.ImageChanged += App_ImageChanged;
-        }
-
-        private void App_ImageChanged(object? sender, ImageChangedEventArgs e)
-        {
-            BitmapSource bitmapSource = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
-               e.NewImage.Bitmap.GetHbitmap(),
-               IntPtr.Zero,
-               Int32Rect.Empty,
-               BitmapSizeOptions.FromEmptyOptions());
-
-            this.Image.Source = bitmapSource;
         }
 
         private async void GrayScaleLoadButton_Click(object sender, RoutedEventArgs e)
@@ -54,16 +42,7 @@ namespace PrzetwrzanieObrazow
 
             await Task.Run(() => ConvertToGrayScale(ref originalBitmap));
 
-            var ImageObject = new ImageObject()
-            {
-                Bitmap = originalBitmap,
-                Name = "Grey"+dialogResult.fileName
-            };
-
-            var imageControl = new ImageControl(ImageObject.Name, ImageObject.Bitmap);
-
-            this.ImageWrapPanel.Children.Add(imageControl);
-            App.Images.Add(ImageObject);
+            OpenNewWindow(originalBitmap, dialogResult.fileName);
         }
 
         private void ColorScaleLoadButton_Click(object sender, RoutedEventArgs e)
@@ -72,29 +51,25 @@ namespace PrzetwrzanieObrazow
 
             if (dialogResult.fileName == string.Empty) return;
 
-            var ImageObject = new ImageObject()
-            {
-                Bitmap = new System.Drawing.Bitmap(dialogResult.filePath),
-                Name = dialogResult.fileName
-            };
-
-            var imageControl = new ImageControl(dialogResult.fileName, ImageObject.Bitmap);
-
-            this.ImageWrapPanel.Children.Add(imageControl);
-            App.Images.Add(ImageObject);
+            OpenNewWindow(new System.Drawing.Bitmap(dialogResult.filePath), dialogResult.fileName);
         }
         private void HistogramGraphicButton_Click(object sender, RoutedEventArgs e)
         {
-            HistogramGraphic hist = new HistogramGraphic(App.CurrentImage.Bitmap);
-            hist.Show();
+            App.FocusedWindow.OpenHistogramGraphic();
         }
+
         private void HistogramTableButton_Click(object sender, RoutedEventArgs e)
         {
-            HistogramTable hist = new HistogramTable(App.CurrentImage.Bitmap);
-            hist.Show();
+            App.FocusedWindow.OpenHistogramTable();
         }
 
         #region Functions
+
+        public void OpenNewWindow(Bitmap bitmap, string title)
+        {
+            ImageWindow imageWindow = new ImageWindow(bitmap, title);
+            imageWindow.Show();
+        }
 
         private void ConvertToGrayScale(ref Bitmap originalBitmap)
         {
@@ -142,6 +117,7 @@ namespace PrzetwrzanieObrazow
                 return (string.Empty, string.Empty);
             }
         }
+
         #endregion
 
         

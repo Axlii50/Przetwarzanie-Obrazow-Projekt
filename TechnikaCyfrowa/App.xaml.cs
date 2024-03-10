@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PrzetwrzanieObrazow.FunctionWindows;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -14,27 +15,6 @@ namespace PrzetwrzanieObrazow
     /// </summary>
     public partial class App : Application
     {
-        public static List<ImageObject> Images = new List<ImageObject>();
-        public static event EventHandler<ImageChangedEventArgs> ImageChanged;
-
-        private static ImageObject currentImage;
-
-        public static ImageObject CurrentImage
-        {
-            get { return currentImage; }
-            set
-            {
-                if (value != currentImage)
-                {
-                    currentImage = value;
-                    OnImageChanged(new ImageChangedEventArgs(value));
-                }
-            }
-        }
-
-        protected static void OnImageChanged(ImageChangedEventArgs e)
-        {
-            ImageChanged?.Invoke(null, e);
-        }
+        public static ImageWindow FocusedWindow;
     }
 }
