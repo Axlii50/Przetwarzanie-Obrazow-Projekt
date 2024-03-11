@@ -18,6 +18,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using static System.Net.Mime.MediaTypeNames;
 using Color = System.Drawing.Color;
+using Image = System.Drawing.Image;
+using PixelFormat = System.Drawing.Imaging.PixelFormat;
+using Rectangle = System.Drawing.Rectangle;
 
 
 namespace PrzetwrzanieObrazow
@@ -76,14 +79,13 @@ namespace PrzetwrzanieObrazow
             using (Graphics g = Graphics.FromImage(originalBitmap))
             {
                 ColorMatrix colorMatrix = new ColorMatrix(
-                          new float[][]
-                          {
-                             [.3f, .3f, .3f, 0, 0],
+                          [
+                             [.3f,  .3f,  .3f,  0, 0],
                              [.59f, .59f, .59f, 0, 0],
                              [.11f, .11f, .11f, 0, 0],
-                             [0, 0, 0, 1, 0],
-                             [0, 0, 0, 0, 1]
-                          });
+                             [0,    0,    0,    1, 0],
+                             [0,    0,    0,    0, 1]
+                          ]);
 
                 using (ImageAttributes attributes = new ImageAttributes())
                 {
@@ -95,6 +97,7 @@ namespace PrzetwrzanieObrazow
                     g.DrawImage(originalBitmap, new System.Drawing.Rectangle(0, 0, originalBitmap.Width, originalBitmap.Height),
                                 0, 0, originalBitmap.Width, originalBitmap.Height, GraphicsUnit.Pixel, attributes);
                 }
+                colorMatrix = null;
             }
         }
 
@@ -108,18 +111,64 @@ namespace PrzetwrzanieObrazow
             {
                 string fileName = openFileDialog.SafeFileName;
                 string filePath = openFileDialog.FileName;
-
+                openFileDialog = null;
                 return (fileName, filePath);
             }
             else
             {
                 MessageBox.Show("Zdjęcie nie wybrane");
+                openFileDialog = null;
                 return (string.Empty, string.Empty);
             }
         }
-
         #endregion
 
-        
+        private void RgbToGreyButton_Click(object sender, RoutedEventArgs e)
+        {
+            Bitmap bitmap = (Bitmap)App.FocusedWindow.Bitmap.Clone();
+
+            ConvertToGrayScale(ref bitmap);
+
+            App.FocusedWindow.Bitmap = bitmap;
+        }
+
+        public void Negate(ref Bitmap image)
+        {
+            Rectangle rect = new Rectangle(0, 0, image.Width, image.Height);
+            BitmapData bmData = image.LockBits(rect, ImageLockMode.ReadWrite, image.PixelFormat);
+
+            int bytesPerPixel = Image.GetPixelFormatSize(image.PixelFormat) / 8;
+            int byteCount = bmData.Stride * image.Height;
+            byte[] pixels = new byte[byteCount];
+
+            System.Runtime.InteropServices.Marshal.Copy(bmData.Scan0, pixels, 0, byteCount);
+
+            for (int i = 0; i < byteCount; i += bytesPerPixel)
+            {
+                pixels[i] = (byte)(255 - pixels[i]); // Blue
+                if (bytesPerPixel > 1)
+                {
+                    pixels[i + 1] = (byte)(255 - pixels[i + 1]); // Green
+                    pixels[i + 2] = (byte)(255 - pixels[i + 2]); // Red
+                }
+                // Asumujemy, że czwarty bajt (jeśli istnieje) to alfa i pozostawiamy go bez zmian
+            }
+
+            System.Runtime.InteropServices.Marshal.Copy(pixels, 0, bmData.Scan0, byteCount);
+            image.UnlockBits(bmData);
+            pixels = null;
+            bmData = null;
+            GC.Collect();
+        }
+
+        private void NegateButton_Click(object sender, RoutedEventArgs e)
+        {
+            Bitmap bitmap = (Bitmap)App.FocusedWindow.Bitmap.Clone();
+
+            Negate(ref bitmap);
+            
+            App.FocusedWindow.Bitmap = bitmap;
+            GC.Collect();
+        }
     }
 }

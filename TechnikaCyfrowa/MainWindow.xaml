@@ -13,20 +13,21 @@
             <RowDefinition Height="100"/>
             <RowDefinition />
         </Grid.RowDefinitions>
-        <Grid Grid.Column="0" Grid.Row="0">
-            <Menu MaxHeight="25" VerticalAlignment="Top" Background="#1f1c1c" Foreground="White">
-                <MenuItem Header="Lab1" MinHeight="25" Background="#1f1c1c">
-                    <MenuItem x:Name="GrayScaleLoadButton" Header="Wczytaj Szarowcieniowe" Background="#1f1c1c"  Click="GrayScaleLoadButton_Click"/>
+        <Grid Grid.Column="0" Grid.Row="0" Background="#1f1c1c">
+            <Menu MaxHeight="25" VerticalAlignment="Top" Background="#1f1c1c">
+                <MenuItem Header="Lab1" MinHeight="25" Background="#1f1c1c" Foreground="White">
+                    <MenuItem x:Name="GrayScaleLoadButton" Header="Wczytaj Szarowcieniowe" Background="#1f1c1c" Click="GrayScaleLoadButton_Click"/>
                     <MenuItem x:Name="ColorScaleLoadButton" Header="Wczytaj kolorowe" Background="#1f1c1c" Click="ColorScaleLoadButton_Click" />
                     <MenuItem x:Name="HistogramGraphicButton" Header="Histogram graficzny"  Background="#1f1c1c" Click="HistogramGraphicButton_Click"/>
                     <MenuItem x:Name="HistogramTableButton" Header="Histogram tablica" Background="#1f1c1c" Click="HistogramTableButton_Click"/>
-                    <MenuItem Header="RGBtoGrey" Background="#1f1c1c"/>
+                    <MenuItem x:Name="RgbToGreyButton" Header="RGBtoGrey" Background="#1f1c1c"  Click="RgbToGreyButton_Click"/>
                     <MenuItem Header="3xGrey" Background="#1f1c1c"/>
                     <MenuItem Header="RGBtoHSV" Background="#1f1c1c"/>
                     <MenuItem Header="Rozciąganie histogramu" Background="#1f1c1c"/>
                     <MenuItem x:Name="EqualizeTableButton" Header="Equalizacja" Background="#1f1c1c"/>
+                    <MenuItem x:Name="NegateButton" Header="Negacja" Background="#1f1c1c" Click="NegateButton_Click"/>
                 </MenuItem>
-                <MenuItem Header="Lab2" Background="#1f1c1c">
+                <MenuItem Header="Lab2" Background="#1f1c1c" Foreground="White">
                     <MenuItem Header="">
  
                     </MenuItem>

@@ -24,8 +24,10 @@ namespace PrzetwrzanieObrazow.FunctionWindows
     /// </summary>
     public partial class ImageWindow : Window
     {
+        const int HEIGHT = 450, WIDTH = 800;
         public event PropertyChangedEventHandler PropertyChanged;
         private Emgu.CV.Image<Bgr, byte> _image;
+
         public Image<Bgr, byte> Image
         {
             get { return _image; }
@@ -33,6 +35,7 @@ namespace PrzetwrzanieObrazow.FunctionWindows
             {
                 if (value != _image)
                 {
+                    Image?.Dispose();
                     _image = value;
                     OnPropertyChanged(nameof(Image));
                 }
@@ -47,7 +50,9 @@ namespace PrzetwrzanieObrazow.FunctionWindows
             }
             set
             {
+                Image?.Dispose();
                 Image = value.ToImage<Bgr, byte>();
+                value.Dispose();
                 OnPropertyChanged(nameof(Image));
             }
         }
@@ -62,9 +67,14 @@ namespace PrzetwrzanieObrazow.FunctionWindows
             SetBitmap();
         }
 
-        protected virtual void OnPropertyChanged(string propertyName)
+        protected virtual async void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+            SetBitmap();
+
+            if (histogramTable != null) await histogramTable.calculateHistogram(this.Bitmap);
+            if (histogramGraphic != null) await histogramGraphic.calculateHistogram(this.Bitmap);
         }
 
         private void SetBitmap()
@@ -90,11 +100,29 @@ namespace PrzetwrzanieObrazow.FunctionWindows
             histogramGraphic.Show();
         }
 
+        //dodanie możliwe czyszczenia tej zmiennej
         HistogramTable histogramTable = null;
         public void OpenHistogramTable()
         {
             histogramTable = new HistogramTable(Bitmap);
             histogramTable.Show();
+        }
+
+        private void Window_Deactivated(object sender, EventArgs e)
+        {
+            this.Bitmap.Dispose();
+        }
+
+        private void Window_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            int SizeChange = 100;
+            double proportionWidth = (double)WIDTH / this.Bitmap.Width;
+            double proportionHeight = (double)HEIGHT / this.Bitmap.Height;
+
+            if (e.Delta < 0) SizeChange = -SizeChange;
+            
+            this.Width += SizeChange * proportionWidth;
+            this.Height += SizeChange * proportionHeight;
         }
     }
 }

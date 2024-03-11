@@ -37,8 +37,10 @@ namespace PrzetwrzanieObrazow.FunctionWindows
             Bitmap = bitmap;
         }
 
-        public void calculateHistogram()
+        public async Task calculateHistogram()
         {
+            this.DataGrid.Items.Clear();
+
             Dictionary<Color, int> histo = new Dictionary<Color, int>();
             int sum = 0;
             for (int x = 0; x < Bitmap.Width; x++)
@@ -57,6 +59,13 @@ namespace PrzetwrzanieObrazow.FunctionWindows
 
 
             this.DataGrid.Items.Add(new DataItem() { Column1 = "trwes", Column2 = "teststs" });
+            histo = null;
+        }
+
+        public async Task calculateHistogram(Bitmap bitmap)
+        {
+            this.Bitmap = bitmap;
+            calculateHistogram();
         }
     }
 }
