@@ -57,11 +57,41 @@ namespace PrzetwrzanieObrazow.FunctionWindows
             }
         }
 
+        public Mat Mat
+        {
+            get
+            {
+                return this.Image.Mat;
+            }
+            set
+            {
+                this.Image = value.ToImage<Bgr, byte>();
+            }
+        }
+
         public ImageWindow(Bitmap bitmap, string title)
         {
             InitializeComponent();
 
             this.Bitmap = bitmap;
+            this.Title = title;
+
+            SetBitmap();
+        }
+        public ImageWindow(Image<Bgr, byte> image, string title)
+        {
+            InitializeComponent();
+
+            this.Image = image;
+            this.Title = title;
+
+            SetBitmap();
+        }
+        public ImageWindow(Image<Gray, byte> image, string title)
+        {
+            InitializeComponent();
+
+            this.Image = image.Mat.ToImage<Bgr, byte>();
             this.Title = title;
 
             SetBitmap();
@@ -74,7 +104,7 @@ namespace PrzetwrzanieObrazow.FunctionWindows
             SetBitmap();
 
             if (histogramTable != null) await histogramTable.calculateHistogram(this.Bitmap);
-            if (histogramGraphic != null) await histogramGraphic.calculateHistogram(this.Bitmap);
+            if (histogramGraphic != null) await histogramGraphic.calculateHistogram(this.Mat);
         }
 
         private void SetBitmap()
@@ -96,7 +126,7 @@ namespace PrzetwrzanieObrazow.FunctionWindows
         HistogramGraphic histogramGraphic = null;
         public void OpenHistogramGraphic()
         {
-            histogramGraphic = new HistogramGraphic(Bitmap);
+            histogramGraphic = new HistogramGraphic(this.Mat);
             histogramGraphic.Show();
         }
 
@@ -110,7 +140,7 @@ namespace PrzetwrzanieObrazow.FunctionWindows
 
         private void Window_Deactivated(object sender, EventArgs e)
         {
-            this.Bitmap.Dispose();
+            
         }
 
         private void Window_MouseWheel(object sender, MouseWheelEventArgs e)

@@ -1,5 +1,7 @@
-﻿using Emgu.CV.Dnn;
+﻿using Emgu.CV;
+using Emgu.CV.Dnn;
 using Emgu.CV.Reg;
+using Emgu.CV.Structure;
 using LiveCharts;
 using LiveCharts.Wpf;
 using System;
@@ -31,105 +33,63 @@ namespace PrzetwrzanieObrazow.FunctionWindows
     /// </summary>
     public partial class HistogramGraphic : Window
     {
-        Bitmap Bitmap { get; set; }
+        Mat mat { get; set; }
 
-        public HistogramGraphic(Bitmap Bitmap)
+        public HistogramGraphic(Mat mat)
         {
             InitializeComponent();
 
-            this.Bitmap = Bitmap;
+            this.mat = mat;
 
             calculateHistogram();
         }
 
         public async Task calculateHistogram()
         {
-            Dictionary<byte, int> redHistogram = new Dictionary<byte, int>();
-            Dictionary<byte, int> greenHistogram = new Dictionary<byte, int>();
-            Dictionary<byte, int> blueHistogram = new Dictionary<byte, int>();
+            var data = CountPixelValues(this.mat);
 
-            Rectangle rect = new Rectangle(0, 0, Bitmap.Width, Bitmap.Height);
-            BitmapData bitmapData = Bitmap.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-
-            IntPtr ptr = bitmapData.Scan0;
-            int bytes = Math.Abs(bitmapData.Stride) * Bitmap.Height;
-            byte[] rgbValues = new byte[bytes];
-
-            System.Runtime.InteropServices.Marshal.Copy(ptr, rgbValues, 0, bytes);
-
-            for (int i = 0; i < rgbValues.Length; i += 4)
+            this.plot.Series.Clear();
+            
+            this.plot.Series.Add(new ColumnSeries()
             {
-                byte blue = rgbValues[i];
-                byte green = rgbValues[i + 1];
-                byte red = rgbValues[i + 2];
+                ColumnPadding = 0,
+                MaxColumnWidth = double.PositiveInfinity,
+                Values = new ChartValues<int>(data),
+                Fill = new SolidColorBrush(Color.FromRgb(0, 0, 255))
+            });
+        }
 
-                // Aktualizacja histogramu dla czerwonego
-                if (redHistogram.ContainsKey(red))
-                {
-                    redHistogram[red]++;
-                }
-                else
-                {
-                    redHistogram.Add(red, 1);
-                }
+        public static int[] CountPixelValues(Mat image)
+        {
+            // Upewniamy się, że obraz jest w skali szarości
+            if (image.NumberOfChannels != 1)
+                MessageBox.Show("Obraz nie jest w skali szarocieniowej");
 
-                // Aktualizacja histogramu dla zielonego
-                if (greenHistogram.ContainsKey(green))
-                {
-                    greenHistogram[green]++;
-                }
-                else
-                {
-                    greenHistogram.Add(green, 1);
-                }
+            // Inicjalizacja tablicy do przechowywania liczników dla każdej możliwej wartości piksela
+            int[] pixelCounts = new int[256];
 
-                // Aktualizacja histogramu dla niebieskiego
-                if (blueHistogram.ContainsKey(blue))
+            // Konwersja Mat na obraz w skali szarości
+            Image<Gray, byte> grayImage = image.ToImage<Gray, byte>();
+
+            // Iteracja przez wszystkie piksele obrazu
+            for (int y = 0; y < grayImage.Height; y++)
+            {
+                for (int x = 0; x < grayImage.Width; x++)
                 {
-                    blueHistogram[blue]++;
-                }
-                else
-                {
-                    blueHistogram.Add(blue, 1);
+                    // Odczytanie wartości piksela
+                    byte pixelValue = grayImage.Data[y, x, 0];
+
+                    // Inkrementacja odpowiedniego licznika
+                    pixelCounts[pixelValue]++;
                 }
             }
 
-            Bitmap.UnlockBits(bitmapData);
-            rgbValues = null;
-            GC.Collect();
-
-            this.plot.Series.Clear();
-
-            this.plot.Series.Add(new ColumnSeries()
-            {
-                ColumnPadding = 0,
-                MaxColumnWidth = double.PositiveInfinity,
-                Values = new ChartValues<int>(redHistogram.Select(x => x.Value).ToList()),
-                Fill = new SolidColorBrush(Color.FromRgb(255, 0, 0))
-            });
-            this.plot.Series.Add(new ColumnSeries()
-            {
-                ColumnPadding = 0,
-                MaxColumnWidth = double.PositiveInfinity,
-                Values = new ChartValues<int>(greenHistogram.Select(x => x.Value).ToList()),
-                Fill = new SolidColorBrush(Color.FromRgb(0, 255, 0))
-            }); 
-            this.plot.Series.Add(new ColumnSeries()
-            {
-                ColumnPadding = 0,
-                MaxColumnWidth = double.PositiveInfinity,
-                Values = new ChartValues<int>(blueHistogram.Select(x => x.Value).ToList()),
-                Fill = new SolidColorBrush(Color.FromRgb(0, 0, 255))
-            });
-
-            redHistogram = null;
-            greenHistogram = null;
-            blueHistogram = null;
+            return pixelCounts;
         }
 
-        public async Task calculateHistogram(Bitmap bitmap)
+        public async Task calculateHistogram(Mat mat)
         {
-            this.Bitmap = bitmap;
+            this.mat = mat;
             calculateHistogram();
         }
     }

@@ -1,4 +1,7 @@
-﻿using Microsoft.Win32;
+﻿using Emgu.CV;
+using Emgu.CV.Structure;
+using Emgu.CV.Util;
+using Microsoft.Win32;
 using PrzetwrzanieObrazow.FunctionWindows;
 using System;
 using System.Collections.Generic;
@@ -73,6 +76,17 @@ namespace PrzetwrzanieObrazow
             ImageWindow imageWindow = new ImageWindow(bitmap, title);
             imageWindow.Show();
         }
+        public void OpenNewWindow(Image<Bgr, byte> image, string title)
+        {
+            ImageWindow imageWindow = new ImageWindow(image, title);
+            imageWindow.Show();
+        }
+        
+        public void OpenNewWindow(Image<Gray, byte> image, string title)
+        {
+            ImageWindow imageWindow = new ImageWindow(image, title);
+            imageWindow.Show();
+        }
 
         private void ConvertToGrayScale(ref Bitmap originalBitmap)
         {
@@ -132,43 +146,48 @@ namespace PrzetwrzanieObrazow
             App.FocusedWindow.Bitmap = bitmap;
         }
 
-        public void Negate(ref Bitmap image)
+        public void Negate(ref Mat image)
         {
-            Rectangle rect = new Rectangle(0, 0, image.Width, image.Height);
-            BitmapData bmData = image.LockBits(rect, ImageLockMode.ReadWrite, image.PixelFormat);
+            if (image.NumberOfChannels != 1)
+                throw new ArgumentException("Obraz musi być w skali szarości.");
 
-            int bytesPerPixel = Image.GetPixelFormatSize(image.PixelFormat) / 8;
-            int byteCount = bmData.Stride * image.Height;
-            byte[] pixels = new byte[byteCount];
+            // Konwersja Mat na obraz w skali szarości
+            Image<Gray, byte> grayImage = image.ToImage<Gray, byte>();
 
-            System.Runtime.InteropServices.Marshal.Copy(bmData.Scan0, pixels, 0, byteCount);
-
-            for (int i = 0; i < byteCount; i += bytesPerPixel)
+            // Iteracja przez wszystkie piksele obrazu
+            for (int y = 0; y < grayImage.Height; y++)
             {
-                pixels[i] = (byte)(255 - pixels[i]); // Blue
-                if (bytesPerPixel > 1)
+                for (int x = 0; x < grayImage.Width; x++)
                 {
-                    pixels[i + 1] = (byte)(255 - pixels[i + 1]); // Green
-                    pixels[i + 2] = (byte)(255 - pixels[i + 2]); // Red
+                    // Negacja wartości piksela
+                    grayImage.Data[y, x, 0] = (byte)(255 - grayImage.Data[y, x, 0]);
                 }
-                // Asumujemy, że czwarty bajt (jeśli istnieje) to alfa i pozostawiamy go bez zmian
             }
-
-            System.Runtime.InteropServices.Marshal.Copy(pixels, 0, bmData.Scan0, byteCount);
-            image.UnlockBits(bmData);
-            pixels = null;
-            bmData = null;
-            GC.Collect();
         }
 
         private void NegateButton_Click(object sender, RoutedEventArgs e)
         {
-            Bitmap bitmap = (Bitmap)App.FocusedWindow.Bitmap.Clone();
+            Mat mat = App.FocusedWindow.Image.Mat;
 
-            Negate(ref bitmap);
+            Negate(ref mat);
             
-            App.FocusedWindow.Bitmap = bitmap;
-            GC.Collect();
+            App.FocusedWindow.Mat = mat;
+        }
+
+        private void SplitChannelButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Rozdziel obraz na tablicę kanałów
+            VectorOfMat channels = new VectorOfMat();
+            CvInvoke.Split(App.FocusedWindow.Image, channels);
+
+            Image<Gray, byte> blueChannelImage = channels[0].ToImage<Gray, byte>();
+            Image<Gray, byte> greenChannelImage = channels[1].ToImage<Gray, byte>();
+            Image<Gray, byte> redChannelImage = channels[2].ToImage<Gray, byte>();
+
+            OpenNewWindow(blueChannelImage, App.FocusedWindow.Title + " BlueChannel");
+            OpenNewWindow(greenChannelImage, App.FocusedWindow.Title + " BlueChannel");
+            OpenNewWindow(redChannelImage, App.FocusedWindow.Title + " BlueChannel");
+
         }
     }
 }
