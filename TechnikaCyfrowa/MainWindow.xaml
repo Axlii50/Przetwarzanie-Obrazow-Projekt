@@ -22,15 +22,17 @@
                     <MenuItem x:Name="HistogramTableButton" Header="Histogram tablica" Background="#1f1c1c" Click="HistogramTableButton_Click"/>
                     <MenuItem x:Name="RgbToGreyButton" Header="RGBtoGrey" Background="#1f1c1c"  Click="RgbToGreyButton_Click"/>
                     <MenuItem x:Name="SplitChannelButton" Header="Split Channels" Background="#1f1c1c" Click="SplitChannelButton_Click"/>
-                    <MenuItem Header="RGBtoHSV" Background="#1f1c1c"/>
-                    <MenuItem Header="Rozciąganie histogramu" Background="#1f1c1c"/>
-                    <MenuItem x:Name="EqualizeTableButton" Header="Equalizacja" Background="#1f1c1c"/>
+                    <MenuItem x:Name="RgbToHSVButton" Header="RGBtoHSV" Background="#1f1c1c" Click="RgbToHSVButton_Click"/>
+                    <MenuItem x:Name="ResizeHistogramButton" Header="Rozciąganie histogramu" Background="#1f1c1c" Click="ResizeHistogramButton_Click"/>
+                    <MenuItem x:Name="EqualizeTableButton" Header="Equalizacja" Background="#1f1c1c" Click="EqualizeTableButton_Click"/>
                     <MenuItem x:Name="NegateButton" Header="Negacja" Background="#1f1c1c" Click="NegateButton_Click"/>
                 </MenuItem>
                 <MenuItem Header="Lab2" Background="#1f1c1c" Foreground="White">
-                    <MenuItem Header="">
- 
-                    </MenuItem>
+                    <MenuItem x:Name="PosterizeButton" Header="Posterize" Background="#1f1c1c" Click="PosterizeButton_Click"/>
+                    <MenuItem x:Name="NeighBourButton" Header="Operacje sąsiedztwa" Background="#1f1c1c" Click="NeighBourButton_Click"/>
+                    
+
+
                 </MenuItem>
             </Menu>
         </Grid>

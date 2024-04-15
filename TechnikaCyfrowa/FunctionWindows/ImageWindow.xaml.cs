@@ -26,19 +26,59 @@ namespace PrzetwrzanieObrazow.FunctionWindows
     {
         const int HEIGHT = 450, WIDTH = 800;
         public event PropertyChangedEventHandler PropertyChanged;
-        private Emgu.CV.Image<Bgr, byte> _image;
+        private Mat _image; // może to zmienić na mata by bardziej uniwersalny typ był do przechowywania
 
+        #region Konwersja
         public Image<Bgr, byte> Image
         {
-            get { return _image; }
+            get
+            {
+                return _image.ToImage<Bgr, byte>();
+            }
             set
             {
                 if (value != _image)
                 {
                     Image?.Dispose();
-                    _image = value;
+                    _image = value.Mat;
                     OnPropertyChanged(nameof(Image));
                 }
+            }
+        }
+
+        public Image<Gray, byte> Gray
+        {
+            get
+            {
+                return _image.ToImage<Gray, byte>();
+            }
+            set
+            {
+                this.Image = value.Mat.ToImage<Bgr, byte>();
+            }
+        }
+
+        public Image<Hsv, byte> Hsv
+        {
+            get
+            {
+                return _image.ToImage<Bgr, byte>().Convert<Hsv, byte>();
+            }
+            set
+            {
+                this.Image = value.Mat.ToImage<Bgr, byte>();
+            }
+        }
+        
+        public Image<Lab, byte> Lab
+        {
+            get
+            {
+                return _image.ToImage<Lab, byte>();
+            }
+            set
+            {
+                _image = value.Mat;
             }
         }
 
@@ -46,12 +86,11 @@ namespace PrzetwrzanieObrazow.FunctionWindows
         {
             get
             {
-                return this.Image.ToBitmap();
+                return this.Mat.ToBitmap();
             }
             set
             {
-                Image?.Dispose();
-                Image = value.ToImage<Bgr, byte>();
+                Mat = value.ToImage<Bgr, byte>().Mat;
                 value.Dispose();
                 OnPropertyChanged(nameof(Image));
             }
@@ -61,13 +100,19 @@ namespace PrzetwrzanieObrazow.FunctionWindows
         {
             get
             {
-                return this.Image.Mat;
+                return _image;
             }
             set
             {
-                this.Image = value.ToImage<Bgr, byte>();
+                if (value != _image)
+                {
+                    this._image = value;
+                    OnPropertyChanged(nameof(Image));
+                }
             }
         }
+
+        #endregion
 
         public ImageWindow(Bitmap bitmap, string title)
         {
@@ -91,7 +136,7 @@ namespace PrzetwrzanieObrazow.FunctionWindows
         {
             InitializeComponent();
 
-            this.Image = image.Mat.ToImage<Bgr, byte>();
+            this.Gray = image;
             this.Title = title;
 
             SetBitmap();

@@ -49,21 +49,21 @@ namespace PrzetwrzanieObrazow.FunctionWindows
             var data = CountPixelValues(this.mat);
 
             this.plot.Series.Clear();
-            
+            this.plot.Background = new SolidColorBrush(Color.FromRgb(0, 0, 0));
             this.plot.Series.Add(new ColumnSeries()
             {
                 ColumnPadding = 0,
                 MaxColumnWidth = double.PositiveInfinity,
                 Values = new ChartValues<int>(data),
-                Fill = new SolidColorBrush(Color.FromRgb(0, 0, 255))
+                Fill = new SolidColorBrush(Color.FromRgb(255, 255, 255))
             });
         }
 
         public static int[] CountPixelValues(Mat image)
         {
             // Upewniamy się, że obraz jest w skali szarości
-            if (image.NumberOfChannels != 1)
-                MessageBox.Show("Obraz nie jest w skali szarocieniowej");
+            //if (image.NumberOfChannels != 1)
+            //    MessageBox.Show("Obraz nie jest w skali szarocieniowej");
 
             // Inicjalizacja tablicy do przechowywania liczników dla każdej możliwej wartości piksela
             int[] pixelCounts = new int[256];

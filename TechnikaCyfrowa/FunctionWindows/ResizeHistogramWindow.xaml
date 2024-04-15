@@ -1,0 +1,33 @@
+﻿<Window x:Class="PrzetwrzanieObrazow.FunctionWindows.ResizeHistogramWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PrzetwrzanieObrazow.FunctionWindows"
+        mc:Ignorable="d"
+        Title="ResizeHistogramWindow" Height="160" Width="316">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="70"/>
+            <RowDefinition Height="70"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150"/>
+            <ColumnDefinition Width="15"/>
+            <ColumnDefinition Width="150"/>
+        </Grid.ColumnDefinitions>
+
+        <Label HorizontalAlignment="Left"  Grid.Row="0">P1</Label>
+        <TextBox x:Name="p1TextBox" Grid.Row="0" Height="45" VerticalAlignment="Bottom"></TextBox>
+
+        <Label HorizontalAlignment="Left"  Grid.Row="0" Grid.Column="2">P2</Label>
+        <TextBox x:Name="p2TextBox" Grid.Row="0"  Grid.Column="2"  Height="45" VerticalAlignment="Bottom"></TextBox>
+
+
+        <Label HorizontalAlignment="Left"  Grid.Row="1">P3</Label>
+        <TextBox x:Name="p3TextBox" Grid.Row="1" Height="45" VerticalAlignment="Bottom"></TextBox>
+
+        <Label HorizontalAlignment="Left"  Grid.Row="1" Grid.Column="2">P4</Label>
+        <TextBox x:Name="p4TextBox" Grid.Row="1"  Grid.Column="2"  Height="45" VerticalAlignment="Bottom"></TextBox>
+    </Grid>
+</Window>

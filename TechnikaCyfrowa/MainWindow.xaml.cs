@@ -4,26 +4,11 @@ using Emgu.CV.Util;
 using Microsoft.Win32;
 using PrzetwrzanieObrazow.FunctionWindows;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
-using System.Text;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using static System.Net.Mime.MediaTypeNames;
-using Color = System.Drawing.Color;
-using Image = System.Drawing.Image;
-using PixelFormat = System.Drawing.Imaging.PixelFormat;
-using Rectangle = System.Drawing.Rectangle;
 
 
 namespace PrzetwrzanieObrazow
@@ -44,7 +29,7 @@ namespace PrzetwrzanieObrazow
 
             if (dialogResult.fileName == string.Empty) return;
 
-            Bitmap originalBitmap = new Bitmap(dialogResult.filePath);
+            Bitmap originalBitmap = new Bitmap(dialogResult.filePath);//do zmiany wczytywanie
 
             await Task.Run(() => ConvertToGrayScale(ref originalBitmap));
 
@@ -57,7 +42,7 @@ namespace PrzetwrzanieObrazow
 
             if (dialogResult.fileName == string.Empty) return;
 
-            OpenNewWindow(new System.Drawing.Bitmap(dialogResult.filePath), dialogResult.fileName);
+            OpenNewWindow(new Bitmap(dialogResult.filePath), dialogResult.fileName);
         }
         private void HistogramGraphicButton_Click(object sender, RoutedEventArgs e)
         {
@@ -148,9 +133,6 @@ namespace PrzetwrzanieObrazow
 
         public void Negate(ref Mat image)
         {
-            if (image.NumberOfChannels != 1)
-                throw new ArgumentException("Obraz musi być w skali szarości.");
-
             // Konwersja Mat na obraz w skali szarości
             Image<Gray, byte> grayImage = image.ToImage<Gray, byte>();
 
@@ -188,6 +170,162 @@ namespace PrzetwrzanieObrazow
             OpenNewWindow(greenChannelImage, App.FocusedWindow.Title + " BlueChannel");
             OpenNewWindow(redChannelImage, App.FocusedWindow.Title + " BlueChannel");
 
+        }
+
+        private void ResizeHistogramButton_Click(object sender, RoutedEventArgs e)
+        {
+            Mat mat = App.FocusedWindow.Gray.Mat;
+
+            ResizeHistogram(ref mat);
+
+            App.FocusedWindow.Mat = mat;
+            App.FocusedWindow.OpenHistogramGraphic();
+        }
+
+        public void ResizeHistogram(ref Mat image, byte? p1 = null, byte? p2 = null, byte q3 = 0, byte q4 = 255)
+        {
+            if(p1 is null || p2 is null)
+            {
+                CvInvoke.MinMaxIdx(image, out double tp1, out double tp2, null, null);
+                p1 = (byte)tp1;
+                p2 = (byte)tp2;
+            }
+
+            int height = image.Height;
+            int step = image.Step;
+
+            byte[] imageData = new byte[height * step];
+            GCHandle handle = GCHandle.Alloc(imageData, GCHandleType.Pinned);
+
+            try
+            {
+                IntPtr pointer = image.DataPointer;
+
+                // Kopiowanie danych obrazu do tablicy
+                Marshal.Copy(pointer, imageData, 0, imageData.Length);
+
+                // Przetwarzanie danych obrazu
+                for (int i = 0; i < imageData.Length; i++)
+                {
+                    double pixel = imageData[i];
+                    pixel = q3 + (pixel - p1.Value) * (q4 - q3) / (p2.Value - p1.Value);
+                    imageData[i] = (byte)Math.Max(Math.Min(pixel, 255), 0);
+                }
+
+                // Kopiowanie przetworzonych danych z powrotem do niezarządzanej pamięci obrazu
+                Marshal.Copy(imageData, 0, pointer, imageData.Length);
+            }
+            finally
+            {
+                if (handle.IsAllocated)
+                    handle.Free();
+            }
+        }
+
+        private void RgbToHSVButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void EqualizeTableButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        public static Image<Gray, byte> EqualizeImage(Image<Gray, byte> image)
+        {
+            byte[,,] data = image.Data;
+            int width = image.Width;
+            int height = image.Height;
+
+            // Krok 1: Obliczenie histogramu
+            int[] histogram = new int[256];
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    histogram[data[y, x, 0]]++;
+                }
+            }
+
+            // Krok 2: Obliczenie skumulowanego histogramu (CDF)
+            int[] cdf = new int[256];
+            cdf[0] = histogram[0];
+            for (int i = 1; i < 256; i++)
+            {
+                cdf[i] = cdf[i - 1] + histogram[i];
+            }
+
+            // Normalizacja CDF
+            float cdfMin = cdf[0];
+            float range = cdf[255] - cdfMin;
+            float[] cdfNormalized = new float[256];
+            for (int i = 0; i < 256; i++)
+            {
+                cdfNormalized[i] = (cdf[i] - cdfMin) / range * 255;
+            }
+
+            // Krok 3: Mapowanie pikseli do wyrównanych wartości
+            Image<Gray, byte> equalizedImage = image.CopyBlank();
+            byte[,,] equalizedData = equalizedImage.Data;
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    equalizedData[y, x, 0] = Convert.ToByte(cdfNormalized[data[y, x, 0]]);
+                }
+            }
+
+            return equalizedImage;
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void PosterizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            int layers = 0;
+            PosterizeWindowInput posterizeWindowInput = new PosterizeWindowInput();
+            if (posterizeWindowInput.ShowDialog() == true)
+                layers = posterizeWindowInput.layers;
+
+            if (layers <= 0) return;
+
+            var currentmat = App.FocusedWindow.Mat;
+
+            var newmat = Posterize(currentmat, layers);
+
+            App.FocusedWindow.Mat = newmat;
+        }
+
+        public static Mat Posterize(Mat image, int levels)
+        {
+            const int divisorconst = 256;
+            Mat posterizedImage = image.Clone();
+
+            int divisor = divisorconst / levels;
+
+            int step = posterizedImage.Step;
+            IntPtr dataPtr = posterizedImage.DataPointer;
+            int byteCount = posterizedImage.Cols * step;
+
+            for (int i = 0; i < byteCount; ++i)
+            {
+                byte byteValue = Marshal.ReadByte(dataPtr, i);
+                byte intensity = (byte)(Math.Round(byteValue / (double)divisor) * divisor);
+
+                Marshal.WriteByte(dataPtr, i, intensity);
+            }
+
+            return posterizedImage;
+        }
+
+        private void NeighBourButton_Click(object sender, RoutedEventArgs e)
+        {
+            NeighboutOperations neighboutOperations = new NeighboutOperations();
+            neighboutOperations.Show();
         }
     }
 }

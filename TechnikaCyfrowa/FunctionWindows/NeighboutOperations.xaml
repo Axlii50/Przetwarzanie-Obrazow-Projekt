@@ -1,0 +1,35 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PrzetwrzanieObrazow.FunctionWindows"
+        xmlns:System="clr-namespace:System;assembly=System.Runtime" x:Class="PrzetwrzanieObrazow.FunctionWindows.NeighboutOperations"
+        mc:Ignorable="d"
+        Title="NeighboutOperations" Height="157" Width="176">
+    <Grid>
+        <ComboBox x:Name="Operation" HorizontalAlignment="Left" VerticalAlignment="Top" Width="151" Height="28"  Background="Black">
+            <System:String>Blur</System:String>
+            <System:String>gaussianBlur</System:String>
+            <System:String>Sobel</System:String>
+            <System:String>Laplacian</System:String>
+            <System:String>Canny</System:String>
+            <System:String>Laplacian1</System:String>
+            <System:String>Laplacian2</System:String>
+            <System:String>Laplacian3</System:String>
+            <System:String>Prewitta1</System:String>
+            <System:String>Prewitta2</System:String>
+            <System:String>Prewitta3</System:String>
+            <System:String>Prewitta4</System:String>
+            <System:String>Prewitta5</System:String>
+            <System:String>Prewitta6</System:String>
+            <System:String>Prewitta7</System:String>
+            <System:String>Prewitta8</System:String>
+            <System:String>Uniwersal</System:String>
+        </ComboBox>
+        <Button Content="Process" HorizontalAlignment="Left" Margin="0,82,0,0" VerticalAlignment="Top" Width="151" Click="Button_Click"/>
+        <ComboBox x:Name="BorderTypeComboBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="151" Height="28"  Background="Black" Margin="0,33,0,0" />
+
+
+    </Grid>
+</Window>
