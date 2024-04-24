@@ -17,13 +17,13 @@ namespace PrzetwrzanieObrazow.FunctionWindows
 
     ///TODO zmienie tego na input window dla jednej wartosci
     /// <summary>
-    /// Logika interakcji dla klasy PosterizeWindowInput.xaml
+    /// Logika interakcji dla klasy InputWindow.xaml
     /// </summary>
-    public partial class PosterizeWindowInput : Window
+    public partial class InputWindow : Window
     {
-        public int layers = -1;
+        public int inputValue = -1;
         
-        public PosterizeWindowInput()
+        public InputWindow()
         {
             InitializeComponent();
         }
@@ -31,7 +31,7 @@ namespace PrzetwrzanieObrazow.FunctionWindows
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             //TODO doadnie zabezpieczenia
-            layers = int.Parse(this.LayersInput.Text);
+            inputValue = int.Parse(this.LayersInput.Text);
             this.DialogResult = true;
         }
     }

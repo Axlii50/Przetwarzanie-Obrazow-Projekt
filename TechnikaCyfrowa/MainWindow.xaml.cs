@@ -287,9 +287,9 @@ namespace PrzetwrzanieObrazow
         private void PosterizeButton_Click(object sender, RoutedEventArgs e)
         {
             int layers = 0;
-            PosterizeWindowInput posterizeWindowInput = new PosterizeWindowInput();
+            InputWindow posterizeWindowInput = new InputWindow();
             if (posterizeWindowInput.ShowDialog() == true)
-                layers = posterizeWindowInput.layers;
+                layers = posterizeWindowInput.inputValue;
 
             if (layers <= 0) return;
 
