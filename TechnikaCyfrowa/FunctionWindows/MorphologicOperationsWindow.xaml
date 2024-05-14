@@ -1,0 +1,32 @@
+﻿<Window x:Class="PrzetwrzanieObrazow.FunctionWindows.MorphologicOperationsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:System="clr-namespace:System;assembly=System.Runtime"
+        mc:Ignorable="d"
+       Title="MorfologicalOperationsWindow" Height="290" Width="350">
+    <Grid Margin="0,0,0,0">
+        <Label x:Name="BorderType" Content="Border Type" HorizontalAlignment="Left" Margin="40,40,0,0" VerticalAlignment="Top"></Label>
+        <Label x:Name="Operation" Content="Operation" HorizontalAlignment="Left" Margin="40,90,0,0" VerticalAlignment="Top"></Label>
+            <Label x:Name="Shape" Content="Shape" HorizontalAlignment="Left" Margin="40,150,0,0" VerticalAlignment="Top"></Label>
+        <ComboBox x:Name="borderTypeComboBox" HorizontalAlignment="Left" Margin="140,42,0,0" VerticalAlignment="Top" Width="120" SelectedIndex="0">
+            <System:String>Isolated</System:String>
+            <System:String>Reflect</System:String>
+            <System:String>Replicate</System:String>
+        </ComboBox>
+
+        <ComboBox x:Name="Operation_ComboBox" HorizontalAlignment="Left" Margin="140,92,0,0" VerticalAlignment="Top" Width="120" SelectedIndex="0">
+            <System:String>Erode</System:String>
+            <System:String>Dilate</System:String>
+            <System:String>Open</System:String>
+            <System:String>Close</System:String>
+        </ComboBox>
+
+        <ComboBox x:Name="Shape_ComboBox" HorizontalAlignment="Left" Margin="140,151,0,0" VerticalAlignment="Top" Width="120" SelectedIndex="0">
+            <System:String>Cross</System:String>
+            <System:String>Rectangle</System:String>
+        </ComboBox>
+        <Button x:Name="MorfologicalOperationsApplay" Content="Apply" HorizontalAlignment="Center" Margin="0,214,0,0" VerticalAlignment="Top" Height="30" Width="70" Click="MorfologicalOperationsApplay_Click"/>
+
+    </Grid>
+</Window>

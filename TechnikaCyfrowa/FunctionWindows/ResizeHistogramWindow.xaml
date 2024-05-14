@@ -5,11 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PrzetwrzanieObrazow.FunctionWindows"
         mc:Ignorable="d"
-        Title="ResizeHistogramWindow" Height="160" Width="316">
+        Title="ResizeHistogramWindow" Height="190" Width="316">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="70"/>
             <RowDefinition Height="70"/>
+            <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="150"/>
@@ -24,10 +25,14 @@
         <TextBox x:Name="p2TextBox" Grid.Row="0"  Grid.Column="2"  Height="45" VerticalAlignment="Bottom"></TextBox>
 
 
-        <Label HorizontalAlignment="Left"  Grid.Row="1">P3</Label>
+        <Label HorizontalAlignment="Left"  Grid.Row="1">Q3</Label>
         <TextBox x:Name="p3TextBox" Grid.Row="1" Height="45" VerticalAlignment="Bottom"></TextBox>
 
-        <Label HorizontalAlignment="Left"  Grid.Row="1" Grid.Column="2">P4</Label>
+        <Label HorizontalAlignment="Left"  Grid.Row="1" Grid.Column="2">Q4</Label>
         <TextBox x:Name="p4TextBox" Grid.Row="1"  Grid.Column="2"  Height="45" VerticalAlignment="Bottom"></TextBox>
+
+        <Button Grid.Row="3" Margin="0,5,0,0" HorizontalAlignment="Stretch" Grid.ColumnSpan="3" Click="Button_Click">
+          Submit  
+        </Button>
     </Grid>
 </Window>

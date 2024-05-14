@@ -51,7 +51,6 @@ namespace PrzetwrzanieObrazow.FunctionWindows
                 case "Prewitta6": Prewitt(6); break;
                 case "Prewitta7": Prewitt(7); break;
                 case "Prewitta8": Prewitt(8); break;
-                case "Uniwersal": break;
             }
 
             this.Close();
@@ -60,6 +59,7 @@ namespace PrzetwrzanieObrazow.FunctionWindows
         private void Prewitt(int prewitIndex)
         {
             var borderType = Enum.Parse<BorderType>(this.BorderTypeComboBox.SelectedItem.ToString());
+
             //    {-1, 0, 1 }, {-1, 0, 1 }, {-1, 0, 1 } ,  // H     Poziomy             1
             //    { -1, -1, -1}, {0, 0, 0 }, {1, 1, 1 },   // V     Pionowy             2
             //    { 0, 1, 1 }, {-1, 0, 1 }, {-1, -1, 0 },  // NE    Prawo-Góra          3

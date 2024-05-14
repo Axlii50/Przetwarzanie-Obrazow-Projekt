@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:PrzetwrzanieObrazow.FunctionWindows"
         xmlns:System="clr-namespace:System;assembly=System.Runtime" x:Class="PrzetwrzanieObrazow.FunctionWindows.NeighboutOperations"
         mc:Ignorable="d"
-        Title="NeighboutOperations" Height="157" Width="176">
+        Title="NeighboutOperations" Height="133" Width="158">
     <Grid>
         <ComboBox x:Name="Operation" HorizontalAlignment="Left" VerticalAlignment="Top" Width="151" Height="28"  Background="Black">
             <System:String>Blur</System:String>
@@ -29,7 +29,5 @@
         </ComboBox>
         <Button Content="Process" HorizontalAlignment="Left" Margin="0,82,0,0" VerticalAlignment="Top" Width="151" Click="Button_Click"/>
         <ComboBox x:Name="BorderTypeComboBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="151" Height="28"  Background="Black" Margin="0,33,0,0" />
-
-
     </Grid>
 </Window>

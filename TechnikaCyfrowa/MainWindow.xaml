@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="MainWindow" Height="600" Width="1200">
+        Title="MainWindow" Height="100" Width="400">
     <Grid>
         <Grid.ColumnDefinitions>
         </Grid.ColumnDefinitions>
@@ -30,9 +30,9 @@
                 <MenuItem Header="Lab2" Background="#1f1c1c" Foreground="White">
                     <MenuItem x:Name="PosterizeButton" Header="Posterize" Background="#1f1c1c" Click="PosterizeButton_Click"/>
                     <MenuItem x:Name="NeighBourButton" Header="Operacje sąsiedztwa" Background="#1f1c1c" Click="NeighBourButton_Click"/>
-                    
-
-
+                </MenuItem>
+                <MenuItem Header="Lab3" Background="#1f1c1c" Foreground="White">
+                    <MenuItem x:Name="MorfologicOperations" Header="Operacje morfologiczne" Click="MorfologicOperations_Click"></MenuItem>
                 </MenuItem>
             </Menu>
         </Grid>

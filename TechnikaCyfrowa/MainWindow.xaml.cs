@@ -1,4 +1,5 @@
 ﻿using Emgu.CV;
+using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
 using Emgu.CV.Util;
 using Microsoft.Win32;
@@ -229,7 +230,15 @@ namespace PrzetwrzanieObrazow
 
         private void EqualizeTableButton_Click(object sender, RoutedEventArgs e)
         {
+            Mat mat = App.FocusedWindow.Gray.Mat;
+            ResizeHistogramWindow resizeHistogramWindow = new ResizeHistogramWindow();
+            if(resizeHistogramWindow.ShowDialog() == true )
+            {
+                ResizeHistogram(ref mat, (byte?)resizeHistogramWindow.p1, (byte?)resizeHistogramWindow.p2, (byte)resizeHistogramWindow.q3, (byte)resizeHistogramWindow.q4);
+            }
 
+            App.FocusedWindow.Mat = mat;
+            App.FocusedWindow.OpenHistogramGraphic();
         }
 
         public static Image<Gray, byte> EqualizeImage(Image<Gray, byte> image)
@@ -279,11 +288,6 @@ namespace PrzetwrzanieObrazow
             return equalizedImage;
         }
 
-        private void MenuItem_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void PosterizeButton_Click(object sender, RoutedEventArgs e)
         {
             int layers = 0;
@@ -326,6 +330,24 @@ namespace PrzetwrzanieObrazow
         {
             NeighboutOperations neighboutOperations = new NeighboutOperations();
             neighboutOperations.Show();
+        }
+
+        private void MorfologicOperations_Click(object sender, RoutedEventArgs e)
+        {
+            var mat = App.FocusedWindow.Mat;
+            MorphologicOperationsWindow window = new MorphologicOperationsWindow();
+            if (window.ShowDialog() == true)
+            {
+                BorderType borderT = window.borderT;
+                MorphOp MorphOperation = window.MorphOperation;
+                ElementShape EleShape = window.EleShape;
+
+                Mat element = CvInvoke.GetStructuringElement(EleShape, new System.Drawing.Size(3, 3), new System.Drawing.Point(-1, -1));
+                Mat result = new Mat();
+                CvInvoke.MorphologyEx(mat, result, MorphOperation, element, new System.Drawing.Point(-1, -1), 1, borderT, new MCvScalar());
+
+                App.FocusedWindow.Mat = result;
+            }
         }
     }
 }
