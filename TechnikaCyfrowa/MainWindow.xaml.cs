@@ -5,6 +5,7 @@ using Emgu.CV.Util;
 using Microsoft.Win32;
 using PrzetwrzanieObrazow.FunctionWindows;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
@@ -226,6 +227,26 @@ namespace PrzetwrzanieObrazow
         private void RgbToHSVButton_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private List<Mat> hsvSplit(Mat mat)
+        {
+            Mat newMat = new Mat();
+            CvInvoke.CvtColor(mat, newMat, ColorConversion.Bgr2Hsv);
+
+            VectorOfMat vector = new VectorOfMat();
+            CvInvoke.Split(newMat, vector);
+            List<Mat> Channels = new List<Mat>();
+
+            for (int i = 0; i < vector.Size; i++)
+            {
+                Mat channel = vector[i];
+                Mat grayChannel = channel.Clone();
+
+                Channels.Add(grayChannel);
+            }
+
+            return Channels;
         }
 
         private void EqualizeTableButton_Click(object sender, RoutedEventArgs e)
