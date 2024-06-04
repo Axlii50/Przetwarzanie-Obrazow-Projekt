@@ -17,6 +17,7 @@
             <Menu MaxHeight="25" VerticalAlignment="Top" Background="#1f1c1c">
                 <MenuItem Header="Lab1" MinHeight="25" Background="#1f1c1c" Foreground="White">
                     <MenuItem x:Name="GrayScaleLoadButton" Header="Wczytaj Szarowcieniowe" Background="#1f1c1c" Click="GrayScaleLoadButton_Click"/>
+                    <MenuItem x:Name="SaveButton" Header="Zapisz" Background="#1f1c1c" Click="SaveButton_Click"/>
                     <MenuItem x:Name="ColorScaleLoadButton" Header="Wczytaj kolorowe" Background="#1f1c1c" Click="ColorScaleLoadButton_Click" />
                     <MenuItem x:Name="HistogramGraphicButton" Header="Histogram graficzny"  Background="#1f1c1c" Click="HistogramGraphicButton_Click"/>
                     <MenuItem x:Name="HistogramTableButton" Header="Histogram tablica" Background="#1f1c1c" Click="HistogramTableButton_Click"/>

@@ -253,12 +253,13 @@ namespace PrzetwrzanieObrazow
         {
             Mat mat = App.FocusedWindow.Gray.Mat;
             ResizeHistogramWindow resizeHistogramWindow = new ResizeHistogramWindow();
-            if(resizeHistogramWindow.ShowDialog() == true )
+            /*if(resizeHistogramWindow.ShowDialog() == true )
             {
                 ResizeHistogram(ref mat, (byte?)resizeHistogramWindow.p1, (byte?)resizeHistogramWindow.p2, (byte)resizeHistogramWindow.q3, (byte)resizeHistogramWindow.q4);
-            }
+            }*/
+            App.FocusedWindow.Mat = EqualizeImage(mat.ToImage<Gray,byte>()).Mat;
 
-            App.FocusedWindow.Mat = mat;
+            //App.FocusedWindow.Mat = mat;
             App.FocusedWindow.OpenHistogramGraphic();
         }
 
@@ -368,6 +369,20 @@ namespace PrzetwrzanieObrazow
                 CvInvoke.MorphologyEx(mat, result, MorphOperation, element, new System.Drawing.Point(-1, -1), 1, borderT, new MCvScalar());
 
                 App.FocusedWindow.Mat = result;
+            }
+        }
+
+        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        {
+            var mat = App.FocusedWindow.Mat;
+
+            SaveFileDialog saveFileDialog = new();
+
+            if(saveFileDialog.ShowDialog() == true)
+            {
+                Bitmap btm = mat.ToBitmap();
+               
+                btm.Save(saveFileDialog.FileName, ImageFormat.Png);
             }
         }
     }

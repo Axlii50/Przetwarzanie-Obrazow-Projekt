@@ -10,6 +10,9 @@
     <Grid>
         <ComboBox x:Name="Operation" HorizontalAlignment="Left" VerticalAlignment="Top" Width="151" Height="28"  Background="Black">
             <System:String>Blur</System:String>
+            <System:String>MedianBlur3x3</System:String>
+            <System:String>MedianBlur5x5</System:String>
+            <System:String>MedianBlur7x7</System:String>
             <System:String>gaussianBlur</System:String>
             <System:String>Sobel</System:String>
             <System:String>Laplacian</System:String>

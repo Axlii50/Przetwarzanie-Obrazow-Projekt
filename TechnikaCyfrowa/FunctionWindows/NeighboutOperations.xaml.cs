@@ -35,6 +35,9 @@ namespace PrzetwrzanieObrazow.FunctionWindows
             switch (this.Operation.SelectedItem)
             {
                 case "Blur": Blur(); break;
+                case "MedianBlur3x3": MedianBlur(3); break;
+                case "MedianBlur5x5": MedianBlur(5); break;
+                case "MedianBlur7x7": MedianBlur(7); break;
                 case "gaussianBlur": GausianBlur(); break;
                 case "SobelX": SobelX(); break;
                 case "SobelY": SobelY(); break;
@@ -73,7 +76,9 @@ namespace PrzetwrzanieObrazow.FunctionWindows
                 1 => new Matrix<double>(3, 3)
                 {
                     Data = new double[3, 3] {
-                         {-1, 0, 1 }, {-1, 0, 1 }, {-1, 0, 1 } }
+                         {-1, 0, 1 }, 
+                         {-1, 0, 1 },
+                         {-1, 0, 1 } }
                 },
                 2 => new Matrix<double>(3, 3)
                 {
@@ -88,7 +93,9 @@ namespace PrzetwrzanieObrazow.FunctionWindows
                 4 => new Matrix<double>(3, 3)
                 {
                     Data = new double[3, 3] {
-                        { -1, 0, 1 }, {-1, 0, 1 }, {0, -1, 1 } }
+                        { -1, -1, 0 },
+                        {-1, 0, 1 },
+                        {0, 1, 1 } }
                 },
                 5 => new Matrix<double>(3, 3)
                 {
@@ -201,6 +208,17 @@ namespace PrzetwrzanieObrazow.FunctionWindows
             var NewMat = App.FocusedWindow.Mat.Clone();
 
             CvInvoke.GaussianBlur(NewMat, NewMat, new System.Drawing.Size(3, 3), 1.5f, 1.5f, borderType);
+
+            App.FocusedWindow.Mat = NewMat;
+        }
+        public void MedianBlur(int size)
+        {
+            var borderType = Enum.Parse<BorderType>(this.BorderTypeComboBox.SelectedItem.ToString());
+
+            var NewMat = App.FocusedWindow.Mat.Clone();
+
+            //CvInvoke.CopyMakeBorder(NewMat, NewMat, 1, 1, 1, 1, borderType);
+            CvInvoke.MedianBlur(NewMat, NewMat, size);
 
             App.FocusedWindow.Mat = NewMat;
         }
