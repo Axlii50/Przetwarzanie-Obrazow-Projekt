@@ -142,6 +142,16 @@ namespace PrzetwrzanieObrazow.FunctionWindows
             SetBitmap();
         }
 
+        public ImageWindow(Mat image, string title)
+        {
+            InitializeComponent();
+
+            this.Mat = image;
+            this.Title = title;
+
+            SetBitmap();
+        }
+
         protected virtual async void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

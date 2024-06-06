@@ -217,7 +217,6 @@ namespace PrzetwrzanieObrazow.FunctionWindows
 
             var NewMat = App.FocusedWindow.Mat.Clone();
 
-            //CvInvoke.CopyMakeBorder(NewMat, NewMat, 1, 1, 1, 1, borderType);
             CvInvoke.MedianBlur(NewMat, NewMat, size);
 
             App.FocusedWindow.Mat = NewMat;

@@ -24,8 +24,10 @@
                     <MenuItem x:Name="RgbToGreyButton" Header="RGBtoGrey" Background="#1f1c1c"  Click="RgbToGreyButton_Click"/>
                     <MenuItem x:Name="SplitChannelButton" Header="Split Channels" Background="#1f1c1c" Click="SplitChannelButton_Click"/>
                     <MenuItem x:Name="RgbToHSVButton" Header="RGBtoHSV" Background="#1f1c1c" Click="RgbToHSVButton_Click"/>
+                    <MenuItem x:Name="RgbToLabButton" Header="RGBtoHSV" Background="#1f1c1c" Click="RgbToLabButton_Click"/>
                     <MenuItem x:Name="ResizeHistogramButton" Header="Rozciąganie histogramu" Background="#1f1c1c" Click="ResizeHistogramButton_Click"/>
                     <MenuItem x:Name="EqualizeTableButton" Header="Equalizacja" Background="#1f1c1c" Click="EqualizeTableButton_Click"/>
+                    <MenuItem x:Name="StretchContrastButton" Header="Stretch Contrast" Background="#1f1c1c" Click="StretchContrastButton_Click"/>
                     <MenuItem x:Name="NegateButton" Header="Negacja" Background="#1f1c1c" Click="NegateButton_Click"/>
                 </MenuItem>
                 <MenuItem Header="Lab2" Background="#1f1c1c" Foreground="White">
@@ -37,10 +39,5 @@
                 </MenuItem>
             </Menu>
         </Grid>
-        <!--<ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Grid.Row="1" Grid.Column="0">
-            <WrapPanel x:Name="ImageWrapPanel"  VerticalAlignment="Top" Height="100" Background="Black" Margin="0,0,0,0">
-            </WrapPanel>
-        </ScrollViewer>
-        <Image x:Name="Image" Grid.Row="2"/>-->
     </Grid>
 </Window>

@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
@@ -70,6 +71,12 @@ namespace PrzetwrzanieObrazow
         }
         
         public void OpenNewWindow(Image<Gray, byte> image, string title)
+        {
+            ImageWindow imageWindow = new ImageWindow(image, title);
+            imageWindow.Show();
+        }
+
+        public void OpenNewWindow(Mat image, string title)
         {
             ImageWindow imageWindow = new ImageWindow(image, title);
             imageWindow.Show();
@@ -171,7 +178,6 @@ namespace PrzetwrzanieObrazow
             OpenNewWindow(blueChannelImage, App.FocusedWindow.Title + " BlueChannel");
             OpenNewWindow(greenChannelImage, App.FocusedWindow.Title + " BlueChannel");
             OpenNewWindow(redChannelImage, App.FocusedWindow.Title + " BlueChannel");
-
         }
 
         private void ResizeHistogramButton_Click(object sender, RoutedEventArgs e)
@@ -226,7 +232,10 @@ namespace PrzetwrzanieObrazow
 
         private void RgbToHSVButton_Click(object sender, RoutedEventArgs e)
         {
-
+            List<Mat> Channels = hsvSplit(App.FocusedWindow.Mat);
+            OpenNewWindow(Channels[0], "HsvR");
+            OpenNewWindow(Channels[1], "HsvG");
+            OpenNewWindow(Channels[2], "HsvB");
         }
 
         private List<Mat> hsvSplit(Mat mat)
@@ -384,6 +393,88 @@ namespace PrzetwrzanieObrazow
                
                 btm.Save(saveFileDialog.FileName, ImageFormat.Png);
             }
+        }
+
+        private void StretchContrastButton_Click(object sender, RoutedEventArgs e)
+        {
+            ResizeHistogramWindow resize = new ResizeHistogramWindow();
+
+            if (resize.ShowDialog() == true)
+            {
+                var mat = App.FocusedWindow.Mat;
+                int p1 = resize.p1;
+                int p2 = resize.p2;
+                int q3 = resize.q3;
+                int q4 = resize.q4;
+
+                mat = StretchContrast(mat, p1, p2, q3, q4);
+                App.FocusedWindow.Mat = mat;
+            }
+        }
+
+        public Mat StretchContrast(Mat mat, int p1, int p2, int q3, int q4)
+        {
+            Image<Gray, byte> image = mat.ToImage<Gray, byte>();
+
+            double minVal = 255;
+            double maxVal = 0;
+
+            for (int y = 0; y < image.Rows; y++)
+            {
+                for (int x = 0; x < image.Cols; x++)
+                {
+                    byte pixelVal = image.Data[y, x, 0];
+                    if (pixelVal >= p1 && pixelVal <= p2)
+                    {
+                        if (pixelVal < minVal) minVal = pixelVal;
+                        if (pixelVal > maxVal) maxVal = pixelVal;
+                    }
+                }
+            }
+
+            for (int y = 0; y < image.Rows; y++)
+            {
+                for (int x = 0; x < image.Cols; x++)
+                {
+                    byte pixelVal = image.Data[y, x, 0];
+                    if (pixelVal >= p1 && pixelVal <= p2)
+                    {
+                        double newVal = ((pixelVal - minVal) / (maxVal - minVal)) * (q4 - q3) + q3;
+                        byte newByteVal = (byte)Math.Round(newVal);
+                        image.Data[y, x, 0] = newByteVal;
+                    }
+                }
+            }
+
+            return image.Mat;
+        }
+
+        private void RgbToLabButton_Click(object sender, RoutedEventArgs e)
+        {
+            List<Mat> Channels = LabSplit(App.FocusedWindow.Mat);
+            OpenNewWindow(Channels[0], "LabR");
+            OpenNewWindow(Channels[1], "LabG");
+            OpenNewWindow(Channels[2], "LabB");
+        }
+
+        public List<Mat> LabSplit(Mat mat)
+        {
+            Mat newMat = new Mat();
+            CvInvoke.CvtColor(mat, newMat, ColorConversion.Bgr2Lab);
+
+            VectorOfMat vector = new VectorOfMat();
+            CvInvoke.Split(newMat, vector);
+            List<Mat> Channels = new List<Mat>();
+
+            for (int i = 0; i < vector.Size; i++)
+            {
+                Mat channel = vector[i];
+                Mat grayChannel = channel.Clone();
+
+                Channels.Add(grayChannel);
+            }
+
+            return Channels;
         }
     }
 }
