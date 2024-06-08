@@ -476,5 +476,47 @@ namespace PrzetwrzanieObrazow
 
             return Channels;
         }
+
+        private void SkeletonizeButton_Click(object sender, RoutedEventArgs e)
+        {
+             App.FocusedWindow.Mat = Skeletonize(App.FocusedWindow.Mat);
+        }
+
+        public Mat Skeletonize(Mat img)
+        {
+            Mat skel = new Mat(img.Size, DepthType.Cv8U, 1);
+            Mat imCopy = img.Clone();
+
+            // Utworzenie kernela
+            Mat element = CvInvoke.GetStructuringElement(ElementShape.Cross, new System.Drawing.Size(3, 3), new System.Drawing.Point(-1, -1));
+
+            // Pętla obejmująca kroki 2-4
+            while (true)
+            {
+                // Krok 2: Otwarcie morfologiczne
+                Mat imOpen = new Mat();
+                CvInvoke.MorphologyEx(imCopy, imOpen, MorphOp.Open, element, new System.Drawing.Point(-1, -1), 1, BorderType.Default, new MCvScalar());
+
+                // Krok 3: Odjęcie powyższego wyniku od obrazu oryginalnego
+                Mat imTemp = new Mat();
+                CvInvoke.Subtract(imCopy, imOpen, imTemp);
+
+                // Krok 4: Erozja morfologiczna
+                Mat imEroded = new Mat();
+                CvInvoke.Erode(imCopy, imEroded, element, new System.Drawing.Point(-1, -1), 1, BorderType.Default, new MCvScalar());
+
+                // Aktualizacja szkieletu
+                CvInvoke.BitwiseOr(skel, imTemp, skel);
+
+                // Aktualizacja obrazu przetwarzanego
+                imCopy = imEroded.Clone();
+
+                // Sprawdzenie warunku zakończenia pętli
+                if (CvInvoke.CountNonZero(imCopy) == 0)
+                    break;
+            }
+
+            return skel;
+        }
     }
 }

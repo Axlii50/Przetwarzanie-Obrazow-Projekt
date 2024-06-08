@@ -36,6 +36,7 @@
                 </MenuItem>
                 <MenuItem Header="Lab3" Background="#1f1c1c" Foreground="White">
                     <MenuItem x:Name="MorfologicOperations" Header="Operacje morfologiczne" Click="MorfologicOperations_Click"></MenuItem>
+                    <MenuItem x:Name="SkeletonizeButton" Header="Szkieletyzacja" Click="SkeletonizeButton_Click"    ></MenuItem>
                 </MenuItem>
             </Menu>
         </Grid>
