@@ -1,5 +1,6 @@
 ﻿using Emgu.CV;
 using Emgu.CV.CvEnum;
+using Emgu.CV.Ocl;
 using Emgu.CV.Structure;
 using Emgu.CV.Util;
 using Microsoft.Win32;
@@ -43,7 +44,7 @@ namespace PrzetwrzanieObrazow
         {
             (string fileName, string filePath) dialogResult = GetFile();
 
-            if (dialogResult.fileName == string.Empty) return;
+            if (dialogResult.fileName == string.Empty || dialogResult.fileName == null) return;
 
             OpenNewWindow(new Bitmap(dialogResult.filePath), dialogResult.fileName);
         }
@@ -517,6 +518,202 @@ namespace PrzetwrzanieObrazow
             }
 
             return skel;
+        }
+
+        private void DistanceTransform_Click(object sender, RoutedEventArgs e)
+        {
+            _ = DistanceTransform(App.FocusedWindow.Mat);
+        }
+
+        private Mat DistanceTransform(Mat mat)
+        {
+            Mat mask = new Mat();
+            //CvInvoke.InRange(mat, new ScalarArray(new MCvScalar(0, 0, 0)), new ScalarArray(new MCvScalar(255, 255, 255)), mask);
+
+            CvInvoke.BitwiseNot(mat, mask);
+
+            //// Ustaw piksele na czarne zgodnie z maską
+            //mat.SetTo(new MCvScalar(0, 0, 0), mask);
+
+            ////CvInvoke.Imshow("BG black", mask);
+            CvInvoke.Imshow("Negateed", mask);
+
+            // Utwórz kernel
+            float[,] kernelData2D = new float[,]
+            {
+                { 1, 1, 1 },
+                { 1, -8, 1 },
+                { 1, 1, 1 }
+            };
+
+            float[] kernelData = new float[kernelData2D.Length];
+            Buffer.BlockCopy(kernelData2D, 0, kernelData, 0, kernelData2D.Length * sizeof(float));
+
+            Mat kernel = new Mat(3, 3, DepthType.Cv32F, 1);
+            Marshal.Copy(kernelData, 0, kernel.DataPointer, kernelData.Length);
+
+            // Wykonaj filtrowanie Laplace'a
+            Mat imgLaplacian = new Mat(mat.Size, mat.Depth, mat.NumberOfChannels);
+            CvInvoke.Filter2D(mat, imgLaplacian, kernel, new System.Drawing.Point(-1, -1), 0, BorderType.Default);
+
+            // Przekształć obraz źródłowy na głębię CV_32F
+            Mat sharp = new Mat(imgLaplacian.Size, imgLaplacian.Depth, imgLaplacian.NumberOfChannels);
+            mat.ConvertTo(sharp, DepthType.Cv32F);
+
+            // Upewnij się, że obrazy mają te same rozmiary
+            if (sharp.Size != imgLaplacian.Size)
+            {
+                CvInvoke.Resize(imgLaplacian, imgLaplacian, sharp.Size);
+            }
+
+            // Upewnij się, że obrazy mają tę samą liczbę kanałów
+            if (sharp.NumberOfChannels != imgLaplacian.NumberOfChannels)
+            {
+                CvInvoke.CvtColor(imgLaplacian, imgLaplacian, ColorConversion.Gray2Bgr);
+            }
+
+            // Odejmij filtr Laplace'a od źródła
+            Mat imgResult = new Mat(imgLaplacian.Size, imgLaplacian.Depth, imgLaplacian.NumberOfChannels);
+            CvInvoke.Subtract(sharp, imgLaplacian, imgResult, null, DepthType.Cv32F);
+
+            // Konwersja z powrotem do CV_8U
+            imgResult.ConvertTo(imgResult, DepthType.Cv8U);
+            imgLaplacian.ConvertTo(imgLaplacian, DepthType.Cv8U);
+
+            // Wyświetl przefiltrowany obraz
+            //OpenNewWindow(imgResult, "2");
+            CvInvoke.Imshow("New Sharpened Image", imgResult);
+
+            // Zastosuj DistanceTransform do wyniku
+            //Mat transformedResult = DistanceTransform(imgResult);
+
+            // OpenNewWindow(transformedResult, "2");
+
+            // Konwertuj obraz na skalę szarości
+            Mat bw = new Mat();
+            CvInvoke.CvtColor(imgResult, bw, ColorConversion.Bgr2Gray);
+
+            // Wykonaj progowanie (thresholding)
+            CvInvoke.Threshold(bw, bw, 40, 255, ThresholdType.Binary | ThresholdType.Otsu);
+            CvInvoke.BitwiseNot(bw, bw);
+
+            // Wyświetl binarny obraz
+            //OpenNewWindow(bw, "3");
+            CvInvoke.Imshow("Binary Image", bw);
+
+            Mat dist = new Mat();
+            CvInvoke.DistanceTransform(bw, dist, null, DistType.L2, 3);
+
+            // Normalizacja obrazu transformacji odległościowej
+            CvInvoke.Normalize(dist, dist, 0, 1.0, NormType.MinMax);
+
+            // Wyświetlenie obrazu transformacji odległościowej
+            CvInvoke.Imshow("Distance Transform Image", dist);
+
+            Mat peaks = new Mat();
+            // Progowanie obrazu transformacji odległościowej
+            CvInvoke.Threshold(dist, peaks, 0.4, 1.0, ThresholdType.Binary);
+
+            // Dylatacja obrazu
+            Mat kernel1 = Mat.Ones(3, 3, DepthType.Cv8U, 1);
+            CvInvoke.Dilate(peaks, peaks, kernel1, new System.Drawing.Point(-1, -1), 1, BorderType.Constant, new MCvScalar(0));
+
+            CvInvoke.Imshow("Peaks", peaks);
+
+
+            Mat dist8u = new Mat();
+            dist.ConvertTo(dist8u, DepthType.Cv8U);
+
+            // Find total markers
+            VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint();
+            CvInvoke.FindContours(dist8u, contours, null, RetrType.External, ChainApproxMethod.ChainApproxSimple);
+
+            // Create the marker image for the watershed algorithm
+            Mat markers = Mat.Zeros(dist.Rows, dist.Cols, DepthType.Cv32S, 1);
+
+            // Draw the foreground markers
+            for (int i = 0; i < contours.Size; i++)
+            {
+                CvInvoke.DrawContours(markers, contours, i, new MCvScalar(i + 1), -1);
+            }
+
+            // Draw the background marker
+            CvInvoke.Circle(markers, new System.Drawing.Point(5, 5), 3, new MCvScalar(255), -1);
+
+            // Convert markers to 8U type for display
+            Mat markers8u = new Mat();
+            markers.ConvertTo(markers8u, DepthType.Cv8U, 10);
+
+            // Show the markers
+            CvInvoke.Imshow("Markers", markers8u);
+
+            // Perform the watershed algorithm
+            CvInvoke.Watershed(imgResult, markers);
+
+            // Convert markers to 8U
+            Mat mark = new Mat();
+            markers.ConvertTo(mark, DepthType.Cv8U);
+            CvInvoke.BitwiseNot(mark, mark);
+
+            // Optionally display the marker image at this point
+            // CvInvoke.Imshow("Markers_v2", mark);
+
+            // Generate random colors
+            List<MCvScalar> colors = new List<MCvScalar>();
+            Random rng = new Random();
+            for (int i = 0; i < contours.Size; i++)
+            {
+                int b = rng.Next(0, 256);
+                int g = rng.Next(0, 256);
+                int r = rng.Next(0, 256);
+                colors.Add(new MCvScalar(b, g, r));
+            }
+
+            // Create the result image
+            Mat dst = new Mat(markers.Size, DepthType.Cv8U, 3);
+            dst.SetTo(new MCvScalar(0, 0, 0)); // Initialize with zeros
+
+            // Fill labeled objects with random colors
+            for (int i = 0; i < markers.Rows; i++)
+            {
+                for (int j = 0; j < markers.Cols; j++)
+                {
+                    int index = GetMarkerValue(markers, i, j);
+                    if (index > 0 && index <= contours.Size)
+                    {
+                        MCvScalar color = colors[index - 1];
+                        SetPixelColor(dst, i, j, color);
+                    }
+                }
+            }
+
+            // Visualize the final image
+            CvInvoke.Imshow("Final Result", dst);
+
+            return markers8u;
+        }
+
+        private int GetMarkerValue(Mat markers, int row, int col)
+        {
+            // Access the pointer to the data
+            IntPtr dataPtr = markers.DataPointer;
+            // Calculate the offset
+            int offset = row * markers.Cols + col;
+            // Read the value from the pointer
+            int value = Marshal.ReadInt32(dataPtr, offset * sizeof(int));
+            return value;
+        }
+
+        private void SetPixelColor(Mat img, int row, int col, MCvScalar color)
+        {
+            // Access the pointer to the data
+            IntPtr dataPtr = img.DataPointer;
+            // Calculate the offset
+            int offset = (row * img.Cols + col) * 3; // 3 channels for BGR
+                                                     // Write the values to the pointer
+            Marshal.WriteByte(dataPtr, offset, (byte)color.V0); // Blue channel
+            Marshal.WriteByte(dataPtr, offset + 1, (byte)color.V1); // Green channel
+            Marshal.WriteByte(dataPtr, offset + 2, (byte)color.V2); // Red channel
         }
     }
 }
