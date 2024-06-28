@@ -528,12 +528,7 @@ namespace PrzetwrzanieObrazow
         private Mat DistanceTransform(Mat mat)
         {
             Mat mask = new Mat();
-            //CvInvoke.InRange(mat, new ScalarArray(new MCvScalar(0, 0, 0)), new ScalarArray(new MCvScalar(255, 255, 255)), mask);
-
             CvInvoke.BitwiseNot(mat, mask);
-
-            //// Ustaw piksele na czarne zgodnie z maską
-            //mat.SetTo(new MCvScalar(0, 0, 0), mask);
 
             ////CvInvoke.Imshow("BG black", mask);
             CvInvoke.Imshow("Negateed", mask);
@@ -578,16 +573,9 @@ namespace PrzetwrzanieObrazow
 
             // Konwersja z powrotem do CV_8U
             imgResult.ConvertTo(imgResult, DepthType.Cv8U);
-            imgLaplacian.ConvertTo(imgLaplacian, DepthType.Cv8U);
 
             // Wyświetl przefiltrowany obraz
-            //OpenNewWindow(imgResult, "2");
             CvInvoke.Imshow("New Sharpened Image", imgResult);
-
-            // Zastosuj DistanceTransform do wyniku
-            //Mat transformedResult = DistanceTransform(imgResult);
-
-            // OpenNewWindow(transformedResult, "2");
 
             // Konwertuj obraz na skalę szarości
             Mat bw = new Mat();
@@ -619,7 +607,6 @@ namespace PrzetwrzanieObrazow
             CvInvoke.Dilate(peaks, peaks, kernel1, new System.Drawing.Point(-1, -1), 1, BorderType.Constant, new MCvScalar(0));
 
             CvInvoke.Imshow("Peaks", peaks);
-
 
             Mat dist8u = new Mat();
             dist.ConvertTo(dist8u, DepthType.Cv8U);
